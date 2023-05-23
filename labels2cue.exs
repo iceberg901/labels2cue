@@ -6,11 +6,13 @@ defmodule Utils do
 
     defp to_mins_seconds(seconds) when is_float(seconds) do
         minutes = trunc(seconds / 60.0)
-        {minutes, round(seconds - (minutes * 60.0))}
+        [minutes, round(seconds - (minutes * 60.0))]
     end
 
     def to_mins_seconds_string(seconds) do
-        {minutes, remaining_seconds} = to_mins_seconds(seconds)
+        [minutes, remaining_seconds] =
+            to_mins_seconds(seconds)
+            |> Enum.map(fn s -> Integer.to_string(s) |> String.pad_leading(2, "0") end)
         "#{minutes}:#{remaining_seconds}:00"
     end
 
