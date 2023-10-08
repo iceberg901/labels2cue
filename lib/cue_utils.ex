@@ -1,6 +1,13 @@
 defmodule CueUtils do
-  defp to_mins_seconds(seconds) when is_bitstring(seconds) do
-    to_mins_seconds(String.to_float(seconds))
+  def to_mins_seconds_string(seconds) do
+    [minutes, remaining_seconds] =
+      to_mins_seconds(seconds)
+      |> Enum.map(fn s ->
+        Integer.to_string(s)
+        |> String.pad_leading(2, "0")
+      end)
+
+    "#{minutes}:#{remaining_seconds}:00"
   end
 
   defp to_mins_seconds(seconds) when is_float(seconds) do
@@ -8,12 +15,15 @@ defmodule CueUtils do
     [minutes, round(seconds - minutes * 60.0)]
   end
 
-  def to_mins_seconds_string(seconds) do
-    [minutes, remaining_seconds] =
-      to_mins_seconds(seconds)
-      |> Enum.map(fn s -> Integer.to_string(s) |> String.pad_leading(2, "0") end)
+  defp to_mins_seconds(seconds) when is_bitstring(seconds) do
+    {parsed, _} = Float.parse(seconds)
+    to_mins_seconds(parsed)
+  end
 
-    "#{minutes}:#{remaining_seconds}:00"
+  defp to_mins_seconds(seconds) when is_integer(seconds) do
+    seconds
+    |> to_string()
+    |> to_mins_seconds
   end
 
   def file_block(file_name), do: "FILE #{file_name}.wav WAVE"
